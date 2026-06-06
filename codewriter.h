@@ -24,5 +24,11 @@ void writeArithmeticAnd(CodeWriter* w);
 
 void writeArithmeticOr(CodeWriter* w);
 
+void writeArithmeticLt(CodeWriter* w);
+
+void writeArithmeticGt(CodeWriter* w);
+
+void writeArithmeticEq(CodeWriter* w);
+
 
 #endif
