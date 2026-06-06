@@ -3,17 +3,30 @@
 #include <string.h>
 
 #include "parser.h"
+#include "codewriter.h"
 
 int main (int argc, char *argv[]) {
-	FILE *arq = fopen("teste.txt", "r");
+	
+	FILE* arq = fopen("teste.vm", "r");
+	FILE* out = fopen("test.asm", "w");
 	
 	if(arq == NULL){
         printf("Erro ao abrir arquivo\n");
         return 1;
     }
+    
+    if(out == NULL){
+        printf("Erro ao criar arquivo\n");
+        return 1;
+    }
 	
 	Parser p;
 	p.currentToken = malloc(32);
+	
+	CodeWriter w;
+	w.out = out;
+	strcpy(w.fileName, "teste");
+	
 	
 	char* arg_1;
     int arg_2;
@@ -42,7 +55,8 @@ int main (int argc, char *argv[]) {
     		case PUSH:
     			arg_1 = arg1(&p);
     			arg_2 = arg2(&p);
-    			printf("codewriterPush(arg1,arg2);\n");
+    			writePush(arg_1, arg_2, &w);
+    			//printf("codewriterPush(arg1,arg2);\n");
     			break;
     		case POP:
     			arg_1 = arg1(&p);
