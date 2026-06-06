@@ -7,7 +7,7 @@
 
 
 
-int getBaseAdress(char* segment){
+int getBaseAddress(char* segment){
 	
 	if(strcmp(segment,"local") == 0){
 		return 1;
@@ -41,7 +41,7 @@ void writePush(char* segment, int value, CodeWriter* w ){
 	}
 	
 	else if(strcmp(segment,"temp") == 0 || strcmp(segment,"pointer") == 0){
-		fprintf(w->out,"@%d			//push static %d\n", getBaseAdress(segment)+value, value);
+		fprintf(w->out,"@%d			//push static %d\n", getBaseAddress(segment)+value, value);
     	fprintf(w->out,"D=M\n");
     	fprintf(w->out,"@SP\n");
     	fprintf(w->out,"A=M\n");
@@ -60,7 +60,7 @@ void writePush(char* segment, int value, CodeWriter* w ){
 	}
 	
 	else{
-        fprintf(w->out,"@%d			//push %s %d\n", getBaseAdress(segment), segment, value);
+        fprintf(w->out,"@%d			//push %s %d\n", getBaseAddress(segment), segment, value);
         fprintf(w->out,"D=M\n");
         fprintf(w->out,"@%d\n", value);
         fprintf(w->out,"A=D+A\n");
@@ -113,4 +113,50 @@ void writePop(char* segment, int value, CodeWriter* w ){
 
 
 
-void writeArithmetic(char* segment, CodeWriter* w){}
+void writeArithmetic(char* segment, CodeWriter* w){
+    if (strcmp(segment,"add") == 0){      writeArithmeticAdd(w);}
+    else if (strcmp(segment,"sub") == 0){ writeArithmeticSub(w);}
+    else if (strcmp(segment,"and") == 0){ writeArithmeticAnd(w);}
+    else if (strcmp(segment,"or") == 0){  writeArithmeticOr(w);}
+}
+
+
+
+
+void writeArithmeticAdd(CodeWriter* w){
+	fprintf(w->out,"@SP		// add");
+    fprintf(w->out,"M=M-1");
+    fprintf(w->out,"A=M");
+    fprintf(w->out,"D=M");
+    fprintf(w->out,"A=A-1");
+    fprintf(w->out,"M=D+M");
+}
+
+
+
+void writeArithmeticSub(CodeWriter* w){
+	fprintf(w->out,"@SP		// sub");
+    fprintf(w->out,"M=M-1");
+    fprintf(w->out,"A=M");
+    fprintf(w->out,"D=M");
+    fprintf(w->out,"A=A-1");
+    fprintf(w->out,"M=M-D");
+}
+
+
+void writeArithmeticAnd(CodeWriter* w){
+	fprintf(w->out,"@SP		// and");
+    fprintf(w->out,"AM=M-1");
+    fprintf(w->out,"D=M");
+    fprintf(w->out,"A=A-1");
+    fprintf(w->out,"M=D&M");
+}
+
+
+void writeArithmeticOr(CodeWriter* w){
+	fprintf(w->out,"@SP		// or");
+    fprintf(w->out,"AM=M-1");
+    fprintf(w->out,"D=M");
+    fprintf(w->out,"A=A-1");
+    fprintf(w->out,"M=D|M");
+}
