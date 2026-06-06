@@ -4,6 +4,7 @@
 typedef struct {
     FILE* out;
     char fileName[256];
+    int labelCount;
 } CodeWriter;
 
 void writePush(char* segment, int value, CodeWriter* w);
