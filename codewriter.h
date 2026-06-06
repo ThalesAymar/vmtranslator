@@ -12,7 +12,7 @@ void writePop(char* segment, int value, CodeWriter* w );
 
 void writeArithmetic(char* segment, CodeWriter* w);
 
-int getBaseAdress(char* segment);
+int getBaseAddress(char* segment);
 
 
 #endif
