@@ -63,6 +63,10 @@ int main (int argc, char *argv[]) {
     			arg_2 = arg2(&p);
 				writePop(arg_1, arg_2, &w);
     			printf("codewriterPop(arg1,arg2);\n");
+			case ARITHMETIC:
+    			arg_1 = arg1(&p);
+				writeArithmetic(arg_1, &w);
+    			printf("codewriterArithmetic(arg1);\n");
     			break;
     		default:
     			printf("Deu ruim\n");
