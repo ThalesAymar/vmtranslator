@@ -61,6 +61,7 @@ int main (int argc, char *argv[]) {
     		case POP:
     			arg_1 = arg1(&p);
     			arg_2 = arg2(&p);
+				writePop(arg_1, arg_2, &w);
     			printf("codewriterPop(arg1,arg2);\n");
     			break;
     		default:
