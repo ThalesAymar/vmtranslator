@@ -118,6 +118,9 @@ void writeArithmetic(char* segment, CodeWriter* w){
     else if (strcmp(segment,"sub") == 0){ writeArithmeticSub(w);}
     else if (strcmp(segment,"and") == 0){ writeArithmeticAnd(w);}
     else if (strcmp(segment,"or") == 0){  writeArithmeticOr(w);}
+	else if (strcmp(segment,"lt") == 0){  writeArithmeticLt(w);}
+    else if (strcmp(segment,"gt") == 0){  writeArithmeticGt(w);}
+    else if (strcmp(segment,"eq") == 0){  writeArithmeticEq(w);}
 }
 
 
@@ -159,4 +162,100 @@ void writeArithmeticOr(CodeWriter* w){
     fprintf(w->out,"D=M");
     fprintf(w->out,"A=A-1");
     fprintf(w->out,"M=D|M");
+}
+
+
+
+void writeArithmeticLt(CodeWriter* w){
+
+    char labelTrue[64];
+    sprintf(labelTrue, "LT_TRUE_%s_%d", w->fileName, w->labelCount);
+
+    char labelEnd[64];
+    sprintf(labelEnd, "LT_END_%s_%d", w->fileName, w->labelCount);
+    
+
+    fprintf(w->out,"@SP		// lt\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M-D\n");
+    fprintf(w->out,"@%s\n", labelTrue);
+    fprintf(w->out,"D;JLT\n");
+    fprintf(w->out,"D=0\n");
+    fprintf(w->out,"@%s\n", labelEnd);
+    fprintf(w->out,"0;JMP\n");
+    fprintf(w->out,"(%s)\n", labelTrue);
+    fprintf(w->out,"D=-1\n");
+    fprintf(w->out,"(%s)\n", labelEnd);
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=M+1\n");
+
+    w->labelCount++;
+}
+
+void writeArithmeticGt(CodeWriter* w){
+
+    char labelTrue[64];
+    sprintf(labelTrue, "GT_TRUE_%s_%d", w->fileName, w->labelCount);
+
+    char labelEnd[64];
+    sprintf(labelEnd, "GT_END_%s_%d", w->fileName, w->labelCount);
+
+    fprintf(w->out,"@SP		// gt\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M-D\n");
+    fprintf(w->out,"@%s\n", labelTrue);
+    fprintf(w->out,"D;JGT\n");
+    fprintf(w->out,"D=0\n");
+    fprintf(w->out,"@%s\n", labelEnd);
+    fprintf(w->out,"0;JMP\n");
+    fprintf(w->out,"(%s)\n", labelTrue);
+    fprintf(w->out,"D=-1\n");
+    fprintf(w->out,"(%s)\n", labelEnd);
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=M+1\n");
+
+    w->labelCount++;
+}
+
+void writeArithmeticEq(CodeWriter* w){
+
+    char labelTrue[64];
+    sprintf(labelTrue, "EQ_TRUE_%s_%d", w->fileName, w->labelCount);
+
+    char labelEnd[64];
+    sprintf(labelEnd, "EQ_END_%s_%d", w->fileName, w->labelCount);
+
+    fprintf(w->out,"@SP		// eq\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");       
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M-D\n");
+    fprintf(w->out,"@%s\n", labelTrue);
+    fprintf(w->out,"D;JEQ\n");
+    fprintf(w->out,"D=0\n");
+    fprintf(w->out,"@%s\n", labelEnd);
+    fprintf(w->out,"0;JMP\n");
+    fprintf(w->out,"(%s)\n", labelTrue);
+    fprintf(w->out,"D=-1\n");
+    fprintf(w->out,"(%s)\n", labelEnd);
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=M+1\n");
+
+    w->labelCount++;
 }
