@@ -80,7 +80,7 @@ void writePop(char* segment, int value, CodeWriter* w ){
 	if(strcmp(segment,"temp") == 0 || strcmp(segment,"pointer") == 0){
         fprintf(w->out,"@SP			// pop %s %d\n", segment, value);
         fprintf(w->out,"M=M-1\n");
-        fprintf(w->out,"A=Mv");
+        fprintf(w->out,"A=M");
         fprintf(w->out,"D=M\n");
         fprintf(w->out,"@%d\n", getBaseAddress(segment) + value);
         fprintf(w->out,"M=D\n");
@@ -90,7 +90,7 @@ void writePop(char* segment, int value, CodeWriter* w ){
         fprintf(w->out,"M=M-1\n");
         fprintf(w->out,"A=M\n");
         fprintf(w->out,"D=M\n");
-        fprintf(w->out,"@%d\n", getBaseAddress(segment) + value);
+        fprintf(w->out,"@%s.%d\n", w->fileName, value);
         fprintf(w->out,"M=D\n");
 	}
 	
@@ -258,4 +258,21 @@ void writeArithmeticEq(CodeWriter* w){
     fprintf(w->out,"M=M+1\n");
 
     w->labelCount++;
+}
+
+
+void writeArithmeticNot(CodeWriter* w){
+	fprintf(w->out,"@SP		// not\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"A=A-1\n");
+    fprintf(w->out,"M=!M\n");
+}
+
+
+void writeArithmeticNeg(CodeWriter* w){
+	fprintf(w->out,"@SP		// neg\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"A=A-1\n");
+    fprintf(w->out,"M=-M\n");
+	
 }
