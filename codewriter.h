@@ -31,5 +31,9 @@ void writeArithmeticGt(CodeWriter* w);
 
 void writeArithmeticEq(CodeWriter* w);
 
+void writeArithmeticNot(CodeWriter* w);
+
+void writeArithmeticNeg(CodeWriter* w);
+
 
 #endif
