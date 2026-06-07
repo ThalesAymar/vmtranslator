@@ -36,4 +36,9 @@ void writeArithmeticNot(CodeWriter* w);
 void writeArithmeticNeg(CodeWriter* w);
 
 
+void makeOutputName(const char* input, char* output);
+
+void setFileName(CodeWriter* w, const char* path);
+
+
 #endif
