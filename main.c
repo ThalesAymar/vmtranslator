@@ -7,29 +7,41 @@
 
 int main (int argc, char *argv[]) {
 	
-	FILE* arq = fopen("teste.vm", "r");
-	FILE* out = fopen("test.asm", "w");
-	
-	if(arq == NULL){
-        printf("Erro ao abrir arquivo\n");
+	if(argc != 2){
+        printf("Nao foram passados 2 argumentos");
+        return 1;
+    }
+
+    FILE* arq = fopen(argv[1], "r");
+
+    if(arq == NULL){
+        printf("Erro ao abrir arquivo %s\n", argv[1]);
+        return 1;
+    }
+
+    char outName[256];
+    makeOutputName(argv[1], outName);
+
+    FILE* out = fopen(outName, "w");
+
+    if(out == NULL){
+        printf("Erro ao criar %s\n", outName);
+        fclose(arq);
         return 1;
     }
     
-    if(out == NULL){
-        printf("Erro ao criar arquivo\n");
-        return 1;
-    }
-	
-	Parser p;
-	p.currentToken = malloc(32);
-	
-	CodeWriter w;
-	w.out = out;
-	strcpy(w.fileName, "teste");
+
+    Parser p;
+    CodeWriter w;
+    
+    w.out = out;
+    setFileName(&w, argv[1]);
+	w.labelCount = 0;
 	
 	
 	char* arg_1;
     int arg_2;
+    
     
 	while(fgets(p.currentLine, sizeof(p.currentLine), arq) != NULL){
 		
@@ -56,26 +68,23 @@ int main (int argc, char *argv[]) {
     			arg_1 = arg1(&p);
     			arg_2 = arg2(&p);
     			writePush(arg_1, arg_2, &w);
-    			//printf("codewriterPush(arg1,arg2);\n");
     			break;
     		case POP:
     			arg_1 = arg1(&p);
     			arg_2 = arg2(&p);
-				writePop(arg_1, arg_2, &w);
-    			printf("codewriterPop(arg1,arg2);\n");
-			case ARITHMETIC:
-    			arg_1 = arg1(&p);
-				writeArithmetic(arg_1, &w);
-    			printf("codewriterArithmetic(arg1);\n");
+    			writePop(arg_1, arg_2, &w);
     			break;
+    		case ARITHMETIC:
+    			arg_1 = arg1(&p);
+    			writeArithmetic(arg_1, &w);
     		default:
-    			printf("Deu ruim\n");
+    			break;
 		}
 	}
 	
 
 	fclose(arq);
 	
-	printf("Deu bom\n");
+	printf("Arquivo %s traduzido com sucesso!\n", argv[1]);
 	return 0;
 }
