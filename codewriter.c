@@ -31,7 +31,7 @@ int getBaseAddress(char* segment){
 
 void writePush(char* segment, int value, CodeWriter* w ){
 	if(strcmp(segment,"constant") == 0){
-		fprintf(w->out, "@%d		//push %s %d\n", value, segment, value);
+		fprintf(w->out, "@%d	//push %s %d\n", value, segment, value);
 		fprintf(w->out,"D=A\n");
         fprintf(w->out,"@SP\n");
         fprintf(w->out,"A=M\n");
@@ -41,7 +41,7 @@ void writePush(char* segment, int value, CodeWriter* w ){
 	}
 	
 	else if(strcmp(segment,"temp") == 0 || strcmp(segment,"pointer") == 0){
-		fprintf(w->out,"@%d			//push static %d\n", getBaseAddress(segment)+value, value);
+		fprintf(w->out,"@%d		//push %s %d\n", getBaseAddress(segment)+value, segment, value);
     	fprintf(w->out,"D=M\n");
     	fprintf(w->out,"@SP\n");
     	fprintf(w->out,"A=M\n");
@@ -60,7 +60,7 @@ void writePush(char* segment, int value, CodeWriter* w ){
 	}
 	
 	else{
-        fprintf(w->out,"@%d			//push %s %d\n", getBaseAddress(segment), segment, value);
+        fprintf(w->out,"@%d		//push %s %d\n", getBaseAddress(segment), segment, value);
         fprintf(w->out,"D=M\n");
         fprintf(w->out,"@%d\n", value);
         fprintf(w->out,"A=D+A\n");
@@ -78,15 +78,15 @@ void writePush(char* segment, int value, CodeWriter* w ){
 
 void writePop(char* segment, int value, CodeWriter* w ){
 	if(strcmp(segment,"temp") == 0 || strcmp(segment,"pointer") == 0){
-        fprintf(w->out,"@SP			// pop %s %d\n", segment, value);
+        fprintf(w->out,"@SP		// pop %s %d\n", segment, value);
         fprintf(w->out,"M=M-1\n");
-        fprintf(w->out,"A=M");
+        fprintf(w->out,"A=M\n");
         fprintf(w->out,"D=M\n");
         fprintf(w->out,"@%d\n", getBaseAddress(segment) + value);
         fprintf(w->out,"M=D\n");
     }
     else if(strcmp(segment,"static") == 0){
-    	fprintf(w->out,"@SP			// pop %s %d\n", segment, value);
+    	fprintf(w->out,"@SP		// pop %s %d\n", segment, value);
         fprintf(w->out,"M=M-1\n");
         fprintf(w->out,"A=M\n");
         fprintf(w->out,"D=M\n");
@@ -113,58 +113,62 @@ void writePop(char* segment, int value, CodeWriter* w ){
 
 
 
+
 void writeArithmetic(char* segment, CodeWriter* w){
     if (strcmp(segment,"add") == 0){      writeArithmeticAdd(w);}
     else if (strcmp(segment,"sub") == 0){ writeArithmeticSub(w);}
     else if (strcmp(segment,"and") == 0){ writeArithmeticAnd(w);}
     else if (strcmp(segment,"or") == 0){  writeArithmeticOr(w);}
-	else if (strcmp(segment,"lt") == 0){  writeArithmeticLt(w);}
+    else if (strcmp(segment,"lt") == 0){  writeArithmeticLt(w);}
     else if (strcmp(segment,"gt") == 0){  writeArithmeticGt(w);}
     else if (strcmp(segment,"eq") == 0){  writeArithmeticEq(w);}
+    else if (strcmp(segment,"not") == 0){ writeArithmeticNot(w);}
+    else if (strcmp(segment,"neg") == 0){ writeArithmeticNeg(w);}
 }
+
 
 
 
 
 void writeArithmeticAdd(CodeWriter* w){
-	fprintf(w->out,"@SP		// add");
-    fprintf(w->out,"M=M-1");
-    fprintf(w->out,"A=M");
-    fprintf(w->out,"D=M");
-    fprintf(w->out,"A=A-1");
-    fprintf(w->out,"M=D+M");
+	fprintf(w->out,"@SP		// add\n");
+    fprintf(w->out,"M=M-1\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"A=A-1\n");
+    fprintf(w->out,"M=D+M\n");
 }
+
 
 
 
 void writeArithmeticSub(CodeWriter* w){
-	fprintf(w->out,"@SP		// sub");
-    fprintf(w->out,"M=M-1");
-    fprintf(w->out,"A=M");
-    fprintf(w->out,"D=M");
-    fprintf(w->out,"A=A-1");
-    fprintf(w->out,"M=M-D");
+	fprintf(w->out,"@SP		// sub\n");
+    fprintf(w->out,"M=M-1\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"A=A-1\n");
+    fprintf(w->out,"M=M-D\n");
 }
+
+
 
 
 void writeArithmeticAnd(CodeWriter* w){
-	fprintf(w->out,"@SP		// and");
-    fprintf(w->out,"AM=M-1");
-    fprintf(w->out,"D=M");
-    fprintf(w->out,"A=A-1");
-    fprintf(w->out,"M=D&M");
+	fprintf(w->out,"@SP		// and\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"A=A-1\n");
+    fprintf(w->out,"M=D&M\n");
 }
-
 
 void writeArithmeticOr(CodeWriter* w){
-	fprintf(w->out,"@SP		// or");
-    fprintf(w->out,"AM=M-1");
-    fprintf(w->out,"D=M");
-    fprintf(w->out,"A=A-1");
-    fprintf(w->out,"M=D|M");
+	fprintf(w->out,"@SP		// or\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"A=A-1\n");
+    fprintf(w->out,"M=D|M\n");
 }
-
-
 
 void writeArithmeticLt(CodeWriter* w){
 
@@ -260,7 +264,6 @@ void writeArithmeticEq(CodeWriter* w){
     w->labelCount++;
 }
 
-
 void writeArithmeticNot(CodeWriter* w){
 	fprintf(w->out,"@SP		// not\n");
     fprintf(w->out,"A=M\n");
@@ -274,5 +277,36 @@ void writeArithmeticNeg(CodeWriter* w){
     fprintf(w->out,"A=M\n");
     fprintf(w->out,"A=A-1\n");
     fprintf(w->out,"M=-M\n");
-	
+}
+
+
+
+
+void makeOutputName(const char* input, char* output){
+    strcpy(output, input);
+
+    char* dot = strrchr(output, '.');
+
+    if(dot != NULL){
+        strcpy(dot, ".asm");
+    }
+}
+
+
+void setFileName(CodeWriter* w, const char* path) {
+    const char* slash1 = strrchr(path, '/');
+    const char* slash2 = strrchr(path, '\\');
+
+    const char* base = path;
+
+    if (slash1 != NULL && slash1 > base) base = slash1 + 1;
+    if (slash2 != NULL && slash2 > base) base = slash2 + 1;
+
+    strncpy(w->fileName, base, sizeof(w->fileName) - 1);
+    w->fileName[sizeof(w->fileName) - 1] = '\0';
+
+    char* dot = strrchr(w->fileName, '.');
+    if (dot != NULL) {
+        *dot = '\0';
+    }
 }
