@@ -1,6 +1,8 @@
 #ifndef CODEWRITER_H
 #define CODEWRITER_H
 
+#include <stdio.h>
+
 typedef struct {
     FILE* out;
     char fileName[256];
