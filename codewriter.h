@@ -15,6 +15,12 @@ void writePop(char* segment, int value, CodeWriter* w );
 
 void writeArithmetic(char* segment, CodeWriter* w);
 
+void writeLabel(char* label, CodeWriter* w);
+
+void writeGoto(char* label, CodeWriter* w);
+
+void writeIf(char* label, CodeWriter* w);
+
 
 int getBaseAddress(char* segment);
 
