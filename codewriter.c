@@ -281,6 +281,27 @@ void writeArithmeticNeg(CodeWriter* w){
 
 
 
+void writeLabel(char* label, CodeWriter* w){
+	fprintf(w->out,"(%s$%s)\n", w->fileName, label);
+}
+
+
+void writeGoto(char* label, CodeWriter* w){
+	fprintf(w->out,"@%s$%s\n", w->fileName, label);
+	fprintf(w->out,"0;JMP\n");
+}
+
+
+void writeIf(char* label, CodeWriter* w){
+	fprintf(w->out,"@SP\n");
+	fprintf(w->out,"AM=M-1\n");
+	fprintf(w->out,"D=M\n");
+	fprintf(w->out,"@%s$%s\n", w->fileName, label);
+	fprintf(w->out,"D;JNE\n");
+}
+
+
+
 
 void makeOutputName(const char* input, char* output){
     strcpy(output, input);
