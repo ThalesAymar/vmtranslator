@@ -77,6 +77,18 @@ int main (int argc, char *argv[]) {
     		case ARITHMETIC:
     			arg_1 = arg1(&p);
     			writeArithmetic(arg_1, &w);
+			case LABEL:
+    			arg_1 = arg1(&p);
+    			writeLabel(arg_1, &w);
+    			break;
+    		case GOTO:
+    			arg_1 = arg1(&p);
+    			writeGoto(arg_1, &w);
+    			break;
+    		case IF:
+    			arg_1 = arg1(&p);
+    			writeIf(arg_1, &w);
+    			break;
     		default:
     			break;
 		}
