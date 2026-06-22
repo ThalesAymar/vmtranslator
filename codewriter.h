@@ -21,6 +21,10 @@ void writeGoto(char* label, CodeWriter* w);
 
 void writeIf(char* label, CodeWriter* w);
 
+void writeFunction(char* funcName , int nLocals, CodeWriter* w);
+
+void writeCall(char* funcName , int nArgs, CodeWriter* w);
+
 
 int getBaseAddress(char* segment);
 
