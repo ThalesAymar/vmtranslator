@@ -302,6 +302,114 @@ void writeIf(char* label, CodeWriter* w){
 
 
 
+void  writeFunction(char* funcName , int nLocals, CodeWriter* w) {
+    
+    
+    char loopLabel[64];
+    sprintf(loopLabel, "%s_INIT_LOCALS_LOOP", funcName);
+
+    char loopEndLabel[64];
+    sprintf(loopEndLabel, "%s_INIT_LOCALS_END", funcName);
+    
+    
+    
+    fprintf(w->out,"(%s)	// initializa local variables\n", funcName);
+    fprintf(w->out,"@%d\n", nLocals);
+    fprintf(w->out,"D=A\n");
+    fprintf(w->out,"@R13\n"); 
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"(%s)\n", loopLabel);
+    
+    fprintf(w->out,"@R13\n");
+    fprintf(w->out,"D=M\n");
+
+    fprintf(w->out,"@%s\n", loopEndLabel);
+    fprintf(w->out,"D;JEQ\n");
+    fprintf(w->out,"@0\n");
+    fprintf(w->out,"D=A\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=M+1\n");
+    fprintf(w->out,"@R13\n");
+    fprintf(w->out,"MD=M-1\n");
+    fprintf(w->out,"@%s\n", loopLabel);
+    fprintf(w->out,"0;JMP\n");
+    fprintf(w->out,"(%s)\n", loopEndLabel);
+}
+
+
+
+
+void writeCall(char* funcName , int nArgs, CodeWriter* w){
+	
+	char returnLabel[64];
+	sprintf(returnLabel, "%s$ret.%d", funcName, w->labelCount++);
+	
+	
+    fprintf(w->out,"@%s	//write call\n", returnLabel); 
+    fprintf(w->out,"D=A\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=M+1\n");
+    
+    
+    fprintf(w->out,"@LCL\n");
+    fprintf(w->out,"@D=M\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@A=M\n");
+    fprintf(w->out,"@M=D\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@M=M+1\n");
+    
+    fprintf(w->out,"@ARG\n");
+    fprintf(w->out,"@D=M\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@A=M\n");
+    fprintf(w->out,"@M=D\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@M=M+1\n");
+    
+    fprintf(w->out,"@THIS\n");
+    fprintf(w->out,"@D=M\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@A=M\n");
+    fprintf(w->out,"@M=D\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@M=M+1\n");
+    
+    fprintf(w->out,"@THAT\n");
+    fprintf(w->out,"@D=M\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@A=M\n");
+    fprintf(w->out,"@M=D\n");
+    fprintf(w->out,"@@SP\n");
+    fprintf(w->out,"@M=M+1\n");
+
+    
+    fprintf(w->out,"@%d\n", nArgs); 
+    fprintf(w->out,"D=A\n");
+    fprintf(w->out,"@5\n");
+    fprintf(w->out,"D=D+A\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"D=M-D\n");
+    fprintf(w->out,"@ARG\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@LCL\n");
+    fprintf(w->out,"M=D\n");
+    
+    writeGoto(funcName, w);
+    
+    fprintf(w->out,"(%s)\n", returnLabel); 
+}
+
+
+
 
 void makeOutputName(const char* input, char* output){
     strcpy(output, input);
