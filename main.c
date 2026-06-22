@@ -89,6 +89,16 @@ int main (int argc, char *argv[]) {
     			arg_1 = arg1(&p);
     			writeIf(arg_1, &w);
     			break;
+			case FUNCTION:
+    			arg_1 = arg1(&p);
+    			arg_2 = arg2(&p);
+    			writeFunction(arg_1, arg_2, &w);
+    			break;
+    		case CALL:
+    			arg_1 = arg1(&p);
+    			arg_2 = arg2(&p);
+    			writeCall(arg_1, arg_2, &w);
+    			break;
     		default:
     			break;
 		}
