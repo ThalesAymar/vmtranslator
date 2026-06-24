@@ -99,6 +99,9 @@ int main (int argc, char *argv[]) {
     			arg_2 = arg2(&p);
     			writeCall(arg_1, arg_2, &w);
     			break;
+			case RETURN:
+    			writeReturn(&w);
+    			break;
     		default:
     			break;
 		}
