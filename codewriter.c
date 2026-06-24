@@ -410,6 +410,65 @@ void writeCall(char* funcName , int nArgs, CodeWriter* w){
 
 
 
+void  writeReturn(CodeWriter* w) {
+    
+    fprintf(w->out,"@LCL  //return\n"); 
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@R13\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@5\n");
+    fprintf(w->out,"A=D-A\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@R14\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@ARG\n");
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"D=A\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=D+1\n");
+    fprintf(w->out,"@R13\n"); 
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@THAT\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@R13\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@THIS\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@R13\n"); 
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@ARG\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@R13\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+    fprintf(w->out,"@LCL\n");
+    fprintf(w->out,"M=D\n");
+    fprintf(w->out,"@R14\n"); 
+    fprintf(w->out,"A=M\n");
+    fprintf(w->out,"0;JMP\n");
+    
+}
+
+
+
+void  writeInit(CodeWriter* w) {
+    fprintf(w->out,"@256");
+    fprintf(w->out,"D=A");
+    fprintf(w->out,"@SP");
+    fprintf(w->out,"M=D");
+    writeCall("Sys.init", 0, w);
+}
+
+
+
+
 
 void makeOutputName(const char* input, char* output){
     strcpy(output, input);
