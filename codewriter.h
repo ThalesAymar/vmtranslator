@@ -6,6 +6,7 @@
 typedef struct {
     FILE* out;
     char fileName[256];
+    char currentFunction[256];
     int labelCount;
 } CodeWriter;
 
