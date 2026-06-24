@@ -25,6 +25,10 @@ void writeFunction(char* funcName , int nLocals, CodeWriter* w);
 
 void writeCall(char* funcName , int nArgs, CodeWriter* w);
 
+void writeReturn(CodeWriter* w);
+
+void writeInit(CodeWriter* w);
+
 
 int getBaseAddress(char* segment);
 
