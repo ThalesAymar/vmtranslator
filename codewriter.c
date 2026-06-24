@@ -282,12 +282,12 @@ void writeArithmeticNeg(CodeWriter* w){
 
 
 void writeLabel(char* label, CodeWriter* w){
-	fprintf(w->out,"(%s$%s)\n", w->fileName, label);
+	fprintf(w->out,"(%s$%s)\n", w->currentFunction, label);
 }
 
 
 void writeGoto(char* label, CodeWriter* w){
-	fprintf(w->out,"@%s$%s\n", w->fileName, label);
+	fprintf(w->out,"@%s$%s\n", w->currentFunction, label);
 	fprintf(w->out,"0;JMP\n");
 }
 
@@ -296,14 +296,15 @@ void writeIf(char* label, CodeWriter* w){
 	fprintf(w->out,"@SP\n");
 	fprintf(w->out,"AM=M-1\n");
 	fprintf(w->out,"D=M\n");
-	fprintf(w->out,"@%s$%s\n", w->fileName, label);
+	fprintf(w->out,"@%s$%s\n", w->currentFunction, label);
 	fprintf(w->out,"D;JNE\n");
 }
 
 
 
 void  writeFunction(char* funcName , int nLocals, CodeWriter* w) {
-    
+	
+    strcpy(w->currentFunction, funcName);
     
     char loopLabel[64];
     sprintf(loopLabel, "%s_INIT_LOCALS_LOOP", funcName);
@@ -403,7 +404,8 @@ void writeCall(char* funcName , int nArgs, CodeWriter* w){
     fprintf(w->out,"@LCL\n");
     fprintf(w->out,"M=D\n");
     
-    writeGoto(funcName, w);
+    fprintf(w->out, "@%s\n", funcName);
+	fprintf(w->out, "0;JMP\n");
     
     fprintf(w->out,"(%s)\n", returnLabel); 
 }
