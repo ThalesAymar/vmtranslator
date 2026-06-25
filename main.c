@@ -1,115 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 
-#include "parser.h"
+#include "translator.h"
 #include "codewriter.h"
 
-int main (int argc, char *argv[]) {
-	
-	if(argc != 2){
-        printf("Nao foram passados 2 argumentos");
+int isDirectory(const char* path) {
+    struct stat statbuf;
+    if (stat(path, &statbuf) != 0){
+		return 0;
+	}
+    return S_ISDIR(statbuf.st_mode);
+}
+
+int main(int argc, char* argv[]) {
+
+    if (argc != 2) {
+        printf("Uso: vmtranslator <arquivo.vm | diretório>\n");
         return 1;
     }
 
-    FILE* arq = fopen(argv[1], "r");
-
-    if(arq == NULL){
-        printf("Erro ao abrir arquivo %s\n", argv[1]);
-        return 1;
-    }
+    const char* inputPath = argv[1];
 
     char outName[256];
-    makeOutputName(argv[1], outName);
-
-    FILE* out = fopen(outName, "w");
-
-    if(out == NULL){
-        printf("Erro ao criar %s\n", outName);
-        fclose(arq);
-        return 1;
-    }
     
 
-    Parser p;
     CodeWriter w;
-    
-    w.out = out;
-    setFileName(&w, argv[1]);
-	w.labelCount = 0;
-	
-	
-	char* arg_1;
-    int arg_2;
-    
-    
-	while(fgets(p.currentLine, sizeof(p.currentLine), arq) != NULL){
-		
-		char* comment = strstr(p.currentLine, "//");
+    w.labelCount = 0;
+    w.currentFunction[0] = '\0';
 
-		if(comment != NULL){
-    		*comment = '\0';
-		}
-		
-		
-		p.currentToken = strtok(p.currentLine, " \t\n");
-		
-		if(p.currentToken == NULL){
-    		continue;
-		}
-		
-		
-		CommandType type = getCommandType(p.currentToken);
-		
-		
+
+    if (isDirectory(inputPath)) {
+    	makeOutputNameDir(inputPath, outName);
+
+    	FILE* out = fopen(outName, "w");
+    	if (!out) {
+        	printf("Erro ao criar arquivo de saida DIR %s\n", outName);
+        	return 1;
+    	}
     	
-    	switch(type){
-    		case PUSH:
-    			arg_1 = arg1(&p);
-    			arg_2 = arg2(&p);
-    			writePush(arg_1, arg_2, &w);
-    			break;
-    		case POP:
-    			arg_1 = arg1(&p);
-    			arg_2 = arg2(&p);
-    			writePop(arg_1, arg_2, &w);
-    			break;
-    		case ARITHMETIC:
-    			arg_1 = arg1(&p);
-    			writeArithmetic(arg_1, &w);
-			case LABEL:
-    			arg_1 = arg1(&p);
-    			writeLabel(arg_1, &w);
-    			break;
-    		case GOTO:
-    			arg_1 = arg1(&p);
-    			writeGoto(arg_1, &w);
-    			break;
-    		case IF:
-    			arg_1 = arg1(&p);
-    			writeIf(arg_1, &w);
-    			break;
-			case FUNCTION:
-    			arg_1 = arg1(&p);
-    			arg_2 = arg2(&p);
-    			writeFunction(arg_1, arg_2, &w);
-    			break;
-    		case CALL:
-    			arg_1 = arg1(&p);
-    			arg_2 = arg2(&p);
-    			writeCall(arg_1, arg_2, &w);
-    			break;
-			case RETURN:
-    			writeReturn(&w);
-    			break;
-    		default:
-    			break;
-		}
+    	w.out = out;
+        translateDirectory(inputPath, &w);
+        fclose(out);
 	}
-	
+		
+	else{
+        makeOutputName(inputPath, outName);
 
-	fclose(arq);
-	
-	printf("Arquivo %s traduzido com sucesso!\n", argv[1]);
-	return 0;
+    	FILE* out = fopen(outName, "w");
+    	if (!out) {
+        	printf("Erro ao criar arquivo de saida SOLO %s\n", outName);
+        	return 1;
+    	}
+    	
+    	
+    	w.out = out;
+        translateFile(inputPath, &w);
+        fclose(out);
+    }
+
+
+    printf("Traducao concluida: %s\n", outName);
+    return 0;
 }

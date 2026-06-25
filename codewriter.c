@@ -282,28 +282,39 @@ void writeArithmeticNeg(CodeWriter* w){
 
 
 void writeLabel(char* label, CodeWriter* w){
-	fprintf(w->out,"(%s$%s)\n", w->currentFunction, label);
+    if(strlen(w->currentFunction) > 0)
+        fprintf(w->out, "(%s$%s)\n", w->currentFunction, label);
+    else
+        fprintf(w->out, "(%s)\n", label);
 }
 
 
 void writeGoto(char* label, CodeWriter* w){
-	fprintf(w->out,"@%s$%s\n", w->currentFunction, label);
-	fprintf(w->out,"0;JMP\n");
+    if(strlen(w->currentFunction) > 0)
+        fprintf(w->out, "@%s$%s\n", w->currentFunction, label);
+    else
+        fprintf(w->out, "@%s\n", label);
+
+    fprintf(w->out, "0;JMP\n");
 }
 
 
 void writeIf(char* label, CodeWriter* w){
-	fprintf(w->out,"@SP\n");
-	fprintf(w->out,"AM=M-1\n");
-	fprintf(w->out,"D=M\n");
-	fprintf(w->out,"@%s$%s\n", w->currentFunction, label);
-	fprintf(w->out,"D;JNE\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"AM=M-1\n");
+    fprintf(w->out,"D=M\n");
+
+    if(strlen(w->currentFunction) > 0)
+        fprintf(w->out,"@%s$%s\n", w->currentFunction, label);
+    else
+        fprintf(w->out,"@%s\n", label);
+
+    fprintf(w->out,"D;JNE\n");
 }
 
 
 
 void  writeFunction(char* funcName , int nLocals, CodeWriter* w) {
-	
     strcpy(w->currentFunction, funcName);
     
     char loopLabel[64];
@@ -349,6 +360,7 @@ void writeCall(char* funcName , int nArgs, CodeWriter* w){
 	sprintf(returnLabel, "%s$ret.%d", funcName, w->labelCount++);
 	
 	
+    
     fprintf(w->out,"@%s	//write call\n", returnLabel); 
     fprintf(w->out,"D=A\n");
     fprintf(w->out,"@SP\n");
@@ -460,14 +472,14 @@ void  writeReturn(CodeWriter* w) {
 
 
 
+
 void  writeInit(CodeWriter* w) {
-    fprintf(w->out,"@256");
-    fprintf(w->out,"D=A");
-    fprintf(w->out,"@SP");
-    fprintf(w->out,"M=D");
+    fprintf(w->out,"@256\n");
+    fprintf(w->out,"D=A\n");
+    fprintf(w->out,"@SP\n");
+    fprintf(w->out,"M=D\n");
     writeCall("Sys.init", 0, w);
 }
-
 
 
 
@@ -480,6 +492,46 @@ void makeOutputName(const char* input, char* output){
     if(dot != NULL){
         strcpy(dot, ".asm");
     }
+}
+    
+    
+    
+    
+
+
+void makeOutputNameDir(const char* input, char* output)
+{
+    strcpy(output, input);
+
+    // Remove barra final, se existir
+    size_t len = strlen(output);
+    if (len > 0 && (output[len - 1] == '/' || output[len - 1] == '\\')) {
+        output[len - 1] = '\0';
+    }
+
+    // Encontra o último componente do caminho
+    char* slash1 = strrchr(output, '/');
+    char* slash2 = strrchr(output, '\\');
+
+    char* base = output;
+
+    if (slash1 && slash1 > base)
+        base = slash1 + 1;
+
+    if (slash2 && slash2 > base)
+        base = slash2 + 1;
+
+    // Guarda o basename porque output será sobrescrito
+    char name[256];
+    strcpy(name, base);
+
+    // Descobre qual separador usar
+    char sep = '/';
+    if (slash2 && (!slash1 || slash2 > slash1))
+        sep = '\\';
+
+    // Monta: <input>/<basename>.asm
+    sprintf(output, "%s%c%s.asm", input, sep, name);
 }
 
 
